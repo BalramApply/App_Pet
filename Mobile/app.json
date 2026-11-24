@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "PetJeeva",
+    "slug": "petjeeva",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.petjeeva.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "PetJeeva uses your location for live session GPS tracking on Leaflet maps and doorstep pet-care arrival verification.",
+        "NSCameraUsageDescription": "PetJeeva uses the camera to capture pet photos and session progress reports.",
+        "NSPhotoLibraryUsageDescription": "PetJeeva accesses photos to upload pet profiles and grooming/training updates."
+      }
+    },
+    "android": {
+      "package": "com.petjeeva.app",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "READ_MEDIA_IMAGES"
+      ]
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-location",
+      "expo-image-picker",
+      "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FF5A5F"
+        }
+      ]
+    ],
+    // "extra": {
+    //   "apiBaseUrl": "http://10.240.33.111:5000/api",
+    //   "socketBaseUrl": "http://10.240.33.111:5000"
+    // }
+
+    "extra": {
+      "apiBaseUrl": "http://10.102.226.111:5000/api",
+      "socketBaseUrl": "http://10.102.226.111:5000"
+    }
+  }
+}

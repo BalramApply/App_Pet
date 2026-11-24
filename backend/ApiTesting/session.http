@@ -1,0 +1,23 @@
+@baseUrl = http://localhost:5000
+@sessionId = 6b042cdf6e76fc7a0c9d15d3
+
+# admin tocken
+# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjA0MWRjYjYzMTQyMTI3YTQ3YzAxMmYiLCJyb2xlIjoiYWRtaW4iLCJhY2NvdW50U3RhdHVzIjoiYWN0aXZlIiwiaWF0IjoxNzk1NDUwMzY0LCJleHAiOjE3OTU0NTEyNjR9.FAtlogpQrdtONODaSzBow489WVp1FFLvXi_yobBgyW4
+
+# admin client
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjA0MWY0NDZlNzZmYzdhMGM5ZDE1NzIiLCJyb2xlIjoicGV0X3BhcmVudCIsImFjY291bnRTdGF0dXMiOiJhY3RpdmUiLCJpYXQiOjE3OTU0NTA1MjksImV4cCI6MTc5NTQ1MTQyOX0.rpv3IpUtbCzvoBN-YlIgMAb1-n-wykluVjHkEMgSDvo
+
+### Get completed session
+GET {{baseUrl}}/api/sessions/{{sessionId}}
+Authorization: Bearer {{token}}
+
+###review
+POST {{baseUrl}}/api/sessions/{{sessionId}}/review
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "criteria": {},
+  "reviewText": "Excellent service. My pet showed great improvement."
+}

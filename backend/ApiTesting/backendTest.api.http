@@ -1,0 +1,543 @@
+### PetJeeva API — REST Client test collection
+### VS Code extension: REST Client (humao.rest-client)
+###
+### 1) Start the backend and set @baseUrl below.
+### 2) Run health check.
+### 3) Complete registration/login, then paste returned access token into @token.
+### 4) Replace IDs with real IDs returned by your API.
+###
+### IMPORTANT:
+### Request body field names are starter examples. The route file supplied does not
+### include controller validation/schema, so align payloads with your controllers.
+### Do not run destructive requests (account deletion, pet/address deletion, booking
+### cancellation) against production data.
+
+@baseUrl = http://localhost:5000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjA0MWRjYjYzMTQyMTI3YTQ3YzAxMmYiLCJyb2xlIjoiYWRtaW4iLCJhY2NvdW50U3RhdHVzIjoiYWN0aXZlIiwiaWF0IjoxNzk1NTI1NjYxLCJleHAiOjE3OTU1MjY1NjF9.sESvt1E95FEDa9Ozm2OwTeGaqat2IkCkgnsRNIo6ORM
+
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjA0MjQwMzZlNzZmYzdhMGM5ZDE1YWIiLCJyb2xlIjoidHJhaW5lciIsInRva2VuVHlwZSI6InJlZnJlc2giLCJpYXQiOjE3OTU0MzkzMTUsImV4cCI6MTc5NjA0NDExNX0.--piHJza0QIY7n4_z_MJVGGXet8YUWtXRhSniQXQm1k
+
+@addressId = 6b043c446e76fc7a0c9d15f8
+
+@petId = 6b043cc06e76fc7a0c9d15fc
+@professionalId = PASTE_PROFESSIONAL_ID_HERE
+
+@bookingId = 6b05578d6d6b86cf9eb5e125
+
+@sessionId = 6b05578d6d6b86cf9eb5e125
+@userId = 6b01adc1688df90d3a62e6ab
+
+### ============================================================
+### 0. HEALTH / PUBLIC CONFIG
+### ============================================================
+
+### Health check — no authentication
+GET {{baseUrl}}/health
+
+### Public support contact
+GET {{baseUrl}}/api/config/support-contact
+
+
+### ============================================================
+### 1. AUTHENTICATION
+### ============================================================
+
+### Start registration — check controller for required fields
+# @name registerInit
+POST {{baseUrl}}/api/auth/register-init
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "phone": "9876543210",
+  "password": "Test@12345",
+  "email": "testuser@example.com"
+}
+
+### Start registration — check controller for required fields
+# @name registerInit
+POST {{baseUrl}}/api/auth/register-init
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "phone": "1111111111",
+  "password": "123456",
+  "email": "testuser@example.com"
+}
+
+### Verify registration — replace OTP with the value received
+POST {{baseUrl}}/api/auth/verify-registration
+Content-Type: application/json
+
+{
+  "phone": "1111111111",
+  "otp": "2982"
+}
+
+### Login admin
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "phone": "9999999999",
+  "password": "999999"
+}
+
+### Login client
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "phone": "1111111111",
+  "password": "111111"
+}
+
+### Refresh access token
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Logout — protected
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Delete current account — DESTRUCTIVE; use only with a disposable test account
+DELETE {{baseUrl}}/api/auth/account
+Authorization: Bearer {{token}}
+
+
+### ============================================================
+### 2. CURRENT USER / PROFILE / ADDRESS BOOK
+### ============================================================
+
+### Get current user
+GET {{baseUrl}}/api/users/me
+Authorization: Bearer {{token}}
+
+### Update current user — adjust fields to your userController
+PUT {{baseUrl}}/api/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Bhola Updated",
+  "email": "testuser@example.com"
+}
+
+### Add address
+# @name addAddress
+POST {{baseUrl}}/api/users/me/addresses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "label": "Home",
+  "line1": "House 10, Sector 45",
+  "line2": "Near Community Centre",
+  "city": "Gurugram",
+  "state": "Haryana",
+  "pincode": "122003",
+  "coordinates": {
+    "lat": null,
+    "lng": null
+  },
+  "isDefault": true
+}
+
+### Update address — replace @addressId
+PUT {{baseUrl}}/api/users/me/addresses/{{addressId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "label": "Office",
+  "line1": "Cyber City",
+  "city": "Gurugram",
+  "state": "Haryana",
+  "pincode": "122002",
+  "state": "Madhay Pradesh"
+}
+
+### Delete address — DESTRUCTIVE
+DELETE {{baseUrl}}/api/users/me/addresses/{{addressId}}
+Authorization: Bearer {{token}}
+
+
+### ============================================================
+### 3. PET CRUD
+### ============================================================
+
+### Create pet
+# @name createPet
+POST {{baseUrl}}/api/pets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Bruno",
+  "species": "cat",
+  "breed": "Golden Retriever",
+  "age": {
+    "years": 3,
+    "months": 0,
+    "lifeStage": "adult"
+  },
+  "gender": "male",
+  "weightKg": 28,
+  "neuteredOrSpayed": false,
+  "medicalHistory": {},
+  "behaviourSummary": {},
+  "photos": []
+}
+
+### List my pets
+GET {{baseUrl}}/api/pets
+Authorization: Bearer {{token}}
+
+### Update pet
+PUT {{baseUrl}}/api/pets/{{petId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Bruno Updated",
+  "weight": 29,
+  "weightUnit": "kg"
+}
+
+### Delete pet — DESTRUCTIVE
+DELETE {{baseUrl}}/api/pets/{{petId}}
+Authorization: Bearer {{token}}
+
+
+### ============================================================
+### 4. PROFESSIONAL DIRECTORY / PROFESSIONAL PROFILE
+### ============================================================
+
+### List professionals
+GET {{baseUrl}}/api/professionals
+Authorization: Bearer {{token}}
+
+### List professionals with example filters (if supported by controller)
+GET {{baseUrl}}/api/professionals?service=walking&city=Gurugram&page=1&limit=10
+Authorization: Bearer {{token}}
+
+# ---------------------------------
+### Get professional by ID
+GET {{baseUrl}}/api/professionals/{{professionalId}}
+Authorization: Bearer {{token}}
+
+### Create or update my professional profile-----------------need to test---------------------
+### Use an account whose role is allowed to become a professional.
+PUT {{baseUrl}}/api/professionals/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "professionalType": "walker",
+  "bio": "Experienced and caring pet professional.",
+  "services": ["walking", "training"],
+  "experienceYears": 2,
+  "serviceAreas": ["Gurugram"],
+  "availability": []
+}
+
+
+### ============================================================
+### 5. WALLET
+### ============================================================
+
+### Get my wallet balance
+GET {{baseUrl}}/api/wallet/balance
+Authorization: Bearer {{token}}
+
+### Get my wallet transactions
+GET {{baseUrl}}/api/wallet/transactions
+Authorization: Bearer {{token}}
+
+### Admin: credit a user's wallet — ADMIN TOKEN REQUIRED
+POST {{baseUrl}}/api/admin/wallet/credit
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "amount": 500,
+  "description": "Test wallet credit"
+}
+
+### Admin: list all wallet transactions — ADMIN TOKEN REQUIRED
+GET {{baseUrl}}/api/admin/wallet/transactions?page=1&limit=20
+Authorization: Bearer {{token}}
+
+
+### ============================================================
+### 6. SERVICES / PACKAGES CATALOG
+### ============================================================
+
+### List services
+GET {{baseUrl}}/api/services
+Authorization: Bearer {{token}}
+
+### List packages
+GET {{baseUrl}}/api/packages
+Authorization: Bearer {{token}}
+
+### Admin: create service — ADMIN TOKEN REQUIRED
+POST {{baseUrl}}/api/admin/services
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "Walking",
+  "code": "PET_WALKING_TEST",
+  "title": "Pet Walking",
+  "targetSpecies": ["dog", "cat"],
+  "description": "Daily walking service for pets.",
+  "syllabusOrInclusions": [
+    "Daily pet walking",
+    "Exercise and activity",
+    "Basic safety monitoring"
+  ],
+  "features": [
+    "Experienced walker",
+    "Pet activity updates"
+  ],
+  "sessionDuration": 60,
+  "activeStatus": true
+}
+
+### Admin: create package — ADMIN TOKEN REQUIRED
+POST {{baseUrl}}/api/admin/packages
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Walking Starter Pack",
+  "description": "Five pet walking sessions.",
+  "service": "Walking",
+  "sessionCount": 5,
+  "price": 1299,
+  "isActive": true
+}
+
+
+### ============================================================
+### 7. BOOKINGS
+### ============================================================
+
+### Book an assessment
+POST {{baseUrl}}/api/bookings/assessment
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "petId": "{{petId}}",
+  "service": "training",
+  "description": "Would like an assessment for basic obedience training.",
+  "addressId": "{{addressId}}"
+}
+
+### Create booking
+# @name createBooking
+POST {{baseUrl}}/api/bookings/create
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "petId": "{{petId}}",
+  "service": "walking",
+  "packageId": null,
+  "professionalId": "{{professionalId}}",
+  "addressId": "{{addressId}}",
+  "scheduledAt": "2026-12-01T09:00:00.000Z",
+  "notes": "Please call before arriving."
+}
+
+### List my bookings
+GET {{baseUrl}}/api/bookings
+Authorization: Bearer {{token}}
+
+### List bookings with example filters (if supported)
+GET {{baseUrl}}/api/bookings?status=pending&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### Get booking by ID
+GET {{baseUrl}}/api/bookings/{{bookingId}}
+Authorization: Bearer {{token}}
+
+### Cancel booking — may change booking/payment state
+POST {{baseUrl}}/api/bookings/{{bookingId}}/cancel
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "reason": "Testing cancellation flow"
+}
+
+
+### ============================================================
+### 8. ADMIN USER MANAGEMENT / APP CONFIG
+### ============================================================
+
+### Admin: list users — ADMIN TOKEN REQUIRED
+GET {{baseUrl}}/api/admin/users?page=1&limit=20
+Authorization: Bearer {{token}}
+
+### Admin: update user — ADMIN TOKEN REQUIRED
+PUT {{baseUrl}}/api/admin/users/{{userId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Test User",
+  "isActive": true
+}
+
+### Admin: update app configuration — ADMIN TOKEN REQUIRED
+PUT {{baseUrl}}/api/admin/config
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "supportEmail": "support@petjeeva.com",
+  "supportPhone": "9876543210"
+}
+
+
+### ============================================================
+### 9. SESSION LIFECYCLE
+### ============================================================
+
+### Get session
+GET {{baseUrl}}/api/sessions/{{sessionId}}
+Authorization: Bearer {{token}}
+
+### Professional arrives
+POST {{baseUrl}}/api/sessions/{{sessionId}}/arrive
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "latitude": 28.4595,
+  "longitude": 77.0266,
+  "note": "Arrived at the service location"
+}
+
+### Start session
+POST {{baseUrl}}/api/sessions/{{sessionId}}/start
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "note": "Service started"
+}
+
+### Complete session
+POST {{baseUrl}}/api/sessions/{{sessionId}}/complete
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "note": "Service completed successfully"
+}
+
+### Interrupt / dispute session
+### Use a test session only; this may alter settlement or dispute state.
+POST {{baseUrl}}/api/sessions/{{sessionId}}/interrupt
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "reason": "Test interruption",
+  "description": "Testing the interruption or dispute workflow"
+}
+
+### Create session review
+POST {{baseUrl}}/api/sessions/{{sessionId}}/review
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "comment": "Professional was punctual and caring."
+}
+
+
+### ============================================================
+### 10. VACCINATION / PET HEALTH VAULT
+### ============================================================
+
+### Create vaccination record
+POST {{baseUrl}}/api/vaccinations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "petId": "{{petId}}",
+  "vaccineName": "Rabies",
+  "administeredAt": "2026-11-21",
+  "nextDueAt": "2027-11-21",
+  "veterinarian": "Dr. Test",
+  "notes": "Test vaccination record"
+}
+
+### Get pet health records
+GET {{baseUrl}}/api/pets/{{petId}}/health-records
+Authorization: Bearer {{token}}
+
+
+### ============================================================
+### 11. SUPPORT TICKETS / SOS
+### ============================================================
+
+### Create support ticket
+POST {{baseUrl}}/api/support/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "subject": "Test support request",
+  "category": "booking",
+  "message": "I need help with a test booking.",
+  "priority": "normal"
+}
+
+### List my support tickets
+GET {{baseUrl}}/api/support/tickets
+Authorization: Bearer {{token}}
+
+
+### ============================================================
+### 12. AUTHORIZATION / NEGATIVE TESTS
+### ============================================================
+
+### Protected endpoint without token — expect 401
+GET {{baseUrl}}/api/users/me
+
+### Protected endpoint with invalid token — expect 401
+GET {{baseUrl}}/api/users/me
+Authorization: Bearer invalid.token.value
+
+### Admin endpoint using a non-admin token — expect 403
+GET {{baseUrl}}/api/admin/users
+Authorization: Bearer {{token}}
+
+### Unknown route — expect 404
+GET {{baseUrl}}/api/this-route-does-not-exist
+
+### Unsupported method — expect 404 (depending on notFound middleware)
+PATCH {{baseUrl}}/api/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}

@@ -1,0 +1,42 @@
+@baseUrl = http://localhost:5000
+@sessionId = 6b05578d6d6b86cf9eb5e11c
+
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjA0MWRjYjYzMTQyMTI3YTQ3YzAxMmYiLCJyb2xlIjoiYWRtaW4iLCJhY2NvdW50U3RhdHVzIjoiYWN0aXZlIiwiaWF0IjoxNzk1NTMyODA4LCJleHAiOjE3OTU1MzM3MDh9.w4cw4joYXk8t5PVtfMLRdsv7aoXQM95BVBbkURZqlRY
+
+### Admin: get session details before timing update
+GET {{baseUrl}}/api/admin/sessions/{{sessionId}}
+Authorization: Bearer {{token}}
+
+### Admin: update scheduledDate + duration (minutes) on a scheduled session
+PUT {{baseUrl}}/api/admin/sessions/{{sessionId}}/schedule
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "scheduledDate": "2026-12-05T10:00:00.000Z",
+  "scheduledDurationMinutes": 60,
+  "reason": "Adjusted session date and 60-minute duration"
+}
+
+### Admin: update start time, end time, and duration
+PUT {{baseUrl}}/api/admin/sessions/{{sessionId}}/schedule
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "scheduledDurationMinutes": 45,
+  "startedAt": "2026-12-05T10:05:00.000Z",
+  "endedAt": "2026-12-05T10:50:00.000Z",
+  "reason": "Corrected actual start and end timestamps"
+}
+
+### Admin: validation error test — endedAt earlier than startedAt (expect 400)
+PUT {{baseUrl}}/api/admin/sessions/{{sessionId}}/schedule
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "startedAt": "2026-12-05T11:00:00.000Z",
+  "endedAt": "2026-12-05T10:30:00.000Z",
+  "reason": "Invalid end before start check"
+}

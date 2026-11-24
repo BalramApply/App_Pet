@@ -1,0 +1,166 @@
+App_Petjeeva/
+├── admin-web/
+│   ├── node_modules/
+│   ├── public/
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── Client.js
+│   │   ├── assets/
+│   │   ├── components/
+│   │   │   ├── Layout.jsx
+│   │   │   ├── SessionModal.jsx
+│   │   │   └── ui.jsx
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   ├── pages/
+│   │   │   ├── Audit.jsx
+│   │   │   ├── Bookings.jsx
+│   │   │   ├── Catalog.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── OpsQueue.jsx
+│   │   │   ├── Professionals.jsx
+│   │   │   ├── Records.jsx
+│   │   │   ├── Reviews.jsx
+│   │   │   ├── Sessions.jsx
+│   │   │   ├── Settings.jsx
+│   │   │   ├── Support.jsx
+│   │   │   └── Users.jsx
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   ├── SessionModal.jsx
+│   │   └── Styles.css
+│   ├── .env
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── README.md
+│   └── vite.config.js
+├── backend/
+│   ├── ApiTesting/
+│   │   └── backendTest.api.http
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   │   ├── adminBookingController.js
+│   │   ├── adminCatalogController.js
+│   │   ├── adminController.js
+│   │   ├── adminProfessionalController.js
+│   │   ├── adminRecordsController.js
+│   │   ├── adminSettingsController.js
+│   │   ├── adminSupportController.js
+│   │   ├── adminUserController.js
+│   │   ├── authController.js
+│   │   ├── bookingController.js
+│   │   ├── sessionAndCareController.js
+│   │   ├── userController.js
+│   │   └── walletAndCatalogController.js
+│   ├── middleware/
+│   │   ├── adminAudit.js
+│   │   ├── authMiddleware.js
+│   │   └── errorMiddleware.js
+│   ├── models/
+│   │   ├── AdminAuditLog.js
+│   │   ├── AppConfig.js
+│   │   ├── Booking.js
+│   │   ├── Package.js
+│   │   ├── Pet.js
+│   │   ├── ProfessionalProfile.js
+│   │   ├── Service.js
+│   │   ├── Session.js
+│   │   ├── SessionAuditLog.js
+│   │   ├── SessionReview.js
+│   │   ├── SupportTicket.js
+│   │   ├── User.js
+│   │   ├── VaccinationRecord.js
+│   │   └── WalletTransaction.js
+│   ├── routes/
+│   │   ├── adminRoutes.js
+│   │   ├── authRoutes.js
+│   │   ├── configAndUserRoutes.js
+│   │   ├── sessionAndCareRoutes.js
+│   │   └── walletCatalogAndBookingRoutes.js
+│   ├── seed/
+│   │   ├── SeedAdmin.js
+│   │   └── seedCatalog.js
+│   ├── sockets/
+│   │   └── socketServer.js
+│   ├── utils/
+│   │   ├── tokenUtils.js
+│   │   └── walletSettlement.js
+│   ├── .env
+│   ├── .env.example
+│   ├── package-lock.json
+│   ├── package.json
+│   └── server.js
+└── Mobile/
+    ├── .expo/
+    ├── .vscode/
+    ├── assets/
+    ├── node_modules/
+    ├── scripts/
+    │   └── reset-project.js
+    ├── src/
+    │   ├── api/
+    │   │   ├── client.ts
+	     └──pets.Api.ts
+    │   ├── components/
+    │   │   ├── CancellationModal.tsx
+    │   │   └── ForgotPasswordModal.tsx
+    │   ├── navigation/
+    │   │   └── AppNavigator.tsx
+    │   ├── screens/
+    │   │   ├── auth/
+    │   │   │   ├── LoginScreen.tsx
+    │   │   │   └── RegisterScreen.tsx
+    │   │   ├── client/
+    │   │   │   ├── AddressEditScreen.tsx
+    │   │   │   ├── BookingDetailScreen.tsx
+    │   │   │   ├── BookingsHubScreen.tsx
+    │   │   │   ├── PetEditScreen.tsx
+    │   │   │   ├── ProfessionalProfileScreen.tsx
+    │   │   │   ├── ProfileScreen.tsx
+    │   │   │   ├── SessionReportScreen.tsx
+    │   │   │   ├── SupportHubScreen.tsx
+    │   │   │   ├── TicketThreadScreen.tsx
+    │   │   │   └── WalletScreen.tsx
+    │   │   ├── pro/
+    │   │   │   ├── ProfessionalDashboardScreen.tsx
+    │   │   │   └── ProfessionalSessionsScreen.tsx
+    │   │   └── shared/
+    │   │       ├── AddressEditScreen.tsx
+    │   │       ├── BookingDetailScreen.tsx
+    │   │       ├── BookingsHubScreen.tsx
+    │   │       ├── PetEditScreen.tsx
+    │   │       ├── ProfessionalProfileScreen.tsx
+    │   │       ├── ProfileScreen.tsx
+    │   │       ├── SessionReportScreen.tsx
+    │   │       ├── SupportHubScreen.tsx
+    │   │       ├── TicketThreadScreen.tsx
+    │   │       └── WalletScreen.tsx
+    │   ├── store/
+    │   │   ├── useAuthStore.ts
+    │   │   ├── useBookingStore.ts
+    │   │   ├── usePetStore.ts
+    │   │   ├── useProfessionalStore.ts
+    │   │   ├── useSessionStore.ts
+    │   │   └── useWalletStore.ts
+    │   ├── theme/
+    │   │   └── theme.ts
+    │   ├── types/
+    │   │   ├── models.ts
+    │   │   └── navigation.ts
+    │   └── global.css
+    ├── .gitignore
+    ├── AGENTS.md
+    ├── app.json
+    ├── App.tsx
+    ├── LICENSE
+    ├── package-lock.json
+    ├── package.json
+    ├── README.md
+    └── tsconfig.json

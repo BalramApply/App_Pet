@@ -1,0 +1,139 @@
+@baseUrl = http://localhost:5000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjA0MWRjYjYzMTQyMTI3YTQ3YzAxMmYiLCJyb2xlIjoiYWRtaW4iLCJhY2NvdW50U3RhdHVzIjoiYWN0aXZlIiwiaWF0IjoxNzk1NTA2NzE3LCJleHAiOjE3OTU1MDc2MTd9.oA8y5JYAh_JQIVjyuEhajt09cBGCis2rUPaRsVK4r7M
+@ticketId = 6b053eff649f95570ec0f309
+@invalidId = not-a-valid-object-id
+@missingId = 674000000000000000000999
+
+### ============================================================================
+### 1. CREATE SUPPORT TICKET - POST /api/support/tickets
+### ============================================================================
+
+### Create a standard ticket (email_inquiry / callback_request)
+POST {{baseUrl}}/support/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "email_inquiry",
+  "priority": "medium",
+  "subject": "Question about ongoing care session schedule",
+  "notes": "Could you confirm the timings for next week's scheduled pet care visit?",
+  "attachments": []
+}
+
+### Create an emergency SOS ticket with optional context references
+POST {{baseUrl}}/support/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "emergency_sos",
+  "priority": "critical",
+  "subject": "Urgent pet care assistance needed",
+  "notes": "Need immediate support regarding an active booking.",
+  "booking": "674000000000000000000010",
+  "session": "674000000000000000000011",
+  "professional": "674000000000000000000012"
+}
+
+### Create a wallet / billing or reschedule ticket
+POST {{baseUrl}}/support/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "wallet_billing_inquiry",
+  "priority": "low",
+  "subject": "Wallet top-up receipt",
+  "notes": "Please share an itemized summary for my recent wallet recharge."
+}
+
+### Validation check: missing required 'notes' or invalid 'type' enum
+# Allowed types: callback_request | email_inquiry | complaint |
+#                reschedule_request | wallet_billing_inquiry |
+#                concern_report | emergency_sos
+POST {{baseUrl}}/support/tickets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "invalid_type",
+  "subject": "Invalid payload test",
+  "notes": ""
+}
+
+### ============================================================================
+### 2. LIST SUPPORT TICKETS - GET /api/support/tickets
+### ============================================================================
+
+### List all tickets for the authenticated user
+GET {{baseUrl}}/support/tickets
+Authorization: Bearer {{token}}
+
+### List tickets filtered by status / type (if supported by your list handler)
+GET {{baseUrl}}/support/tickets?status=open&type=email_inquiry
+Authorization: Bearer {{token}}
+
+### ============================================================================
+### 3. GET SINGLE TICKET THREAD - GET /api/support/tickets/:ticketId
+### Marks staff replies as read (updates userLastReadAt) and strips internal notes
+### ============================================================================
+
+### Get ticket thread (owner view)
+GET {{baseUrl}}/support/tickets/{{ticketId}}
+Authorization: Bearer {{token}}
+
+### Error 400: Invalid ObjectId format
+GET {{baseUrl}}/support/tickets/{{invalidId}}
+Authorization: Bearer {{token}}
+
+### Error 404: Non-existent ticket or ticket belonging to another user
+GET {{baseUrl}}/support/tickets/{{missingId}}
+Authorization: Bearer {{token}}
+
+### ============================================================================
+### 4. REPLY TO TICKET - POST /api/support/tickets/:ticketId/reply
+### Reopens 'resolved' tickets; returns 409 if 'closed' or >= 100 messages
+### ============================================================================
+
+### Send a valid reply to an open or resolved ticket
+POST {{baseUrl}}/support/tickets/{{ticketId}}/reply
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "body": "Thanks....... for the update, sharing a quick follow-up detail here."
+}
+
+### Error 400: Empty or whitespace-only reply body
+POST {{baseUrl}}/support/tickets/{{ticketId}}/reply
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "body": "   "
+}
+
+### Error 400: Invalid ticketId format on reply
+POST {{baseUrl}}/support/tickets/{{invalidId}}/reply
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "body": "Testing invalid ticket ID"
+}
+
+### Error 404: Ticket not found or not owned by current user
+POST {{baseUrl}}/support/tickets/{{missingId}}/reply
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "body": "Testing missing ticket"
+}
+
+### ============================================================================
+### 5. AUTHENTICATION GUARD CHECKS (expect 401)
+### ============================================================================
+
+GET {{baseUrl}}/support/tickets
