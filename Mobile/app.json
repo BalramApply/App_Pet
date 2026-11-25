@@ -36,11 +36,6 @@
         }
       ]
     ],
-    // "extra": {
-    //   "apiBaseUrl": "http://10.240.33.111:5000/api",
-    //   "socketBaseUrl": "http://10.240.33.111:5000"
-    // }
-
     "extra": {
       "apiBaseUrl": "http://10.102.226.111:5000/api",
       "socketBaseUrl": "http://10.102.226.111:5000"

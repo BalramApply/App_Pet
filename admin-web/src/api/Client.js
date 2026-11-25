@@ -24,7 +24,7 @@ export const tokens = {
 
 export const errMsg = (e) => e?.response?.data?.message || e?.message || 'Something went wrong.';
 
-export const api = axios.create({ baseURL: API_BASE_URL, timeout: 20000 });
+export const api = axios.create({ baseURL: API_BASE_URL, timeout: 45000 });
 
 api.interceptors.request.use((config) => {
   if (tokens.access) config.headers.Authorization = `Bearer ${tokens.access}`;
