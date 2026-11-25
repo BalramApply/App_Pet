@@ -6,7 +6,7 @@ import {
 } from '../components/ui.jsx';
 import {
   useApi, useDebounced, label, fmtDateTime,
-} from '../components/uiHelpers.js';
+} from '../components/ui.jsx';
 
 const day = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { dateStyle: 'medium' }) : '-');
 const dateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');

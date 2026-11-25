@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api/Client.js';
 import { PageHead, Spinner, ErrorBox, Table, Badge, Pager } from '../components/ui.jsx';
-import { useApi, label, fmtDateTime, inr } from '../components/uiHelpers.js';
+import { useApi, label, fmtDateTime, inr } from '../components/ui.jsx';
 import SessionModal from '../components/SessionModal.jsx';
 
 const STATUSES = ['scheduled', 'professional_arrived', 'in_progress', 'duration_completed', 'completed', 'interrupted', 'disputed', 'cancelled'];

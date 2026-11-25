@@ -3,7 +3,7 @@ import {
   PawPrint, LayoutDashboard, Siren, Users, BadgeCheck, CalendarCheck, Activity, LifeBuoy,
   Star, Package, Syringe, Settings, ScrollText, LogOut,
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth } from "../context/useAuth.js";
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },

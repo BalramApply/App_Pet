@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { api, errMsg } from '../api/client.js';
 import { PageHead, Spinner, ErrorBox, Table, Badge, Pager } from '../components/ui.jsx';
-import { useApi, useDebounced, label, fmtDateTime } from '../components/uiHelpers.js';
+import { useApi, useDebounced, label, fmtDateTime } from '../components/ui.jsx';
 
 export default function Reviews() {
   const [status, setStatus] = useState('flagged');

@@ -5,7 +5,7 @@ import {
 } from '../components/ui.jsx';
 import {
   useApi, useDebounced, label, fmtDateTime,
-} from '../components/uiHelpers.js';
+} from '../components/ui.jsx';
 
 // The customer replied after the last staff reply (or staff never replied)
 const awaitingStaff = (t) =>

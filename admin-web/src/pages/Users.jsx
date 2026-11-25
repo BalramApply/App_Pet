@@ -6,7 +6,7 @@ import {
 } from '../components/ui.jsx';
 import {
   useApi, useDebounced, inr, label, fmtDateTime,
-} from '../components/uiHelpers.js';
+} from '../components/ui.jsx';
 
 const PRO_ROLES = ['walker', 'trainer', 'groomer', 'vet', 'paravet', 'counsellor', 'relationship_manager'];
 const ALL_ROLES = ['pet_parent', ...PRO_ROLES];

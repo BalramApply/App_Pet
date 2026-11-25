@@ -6,7 +6,7 @@ import {
 } from '../components/ui.jsx';
 import {
   useApi, useDebounced, label, fmtDateTime,
-} from '../components/uiHelpers.js';
+} from '../components/ui.jsx';
 
 const PRO_ROLES = ['walker', 'trainer', 'groomer', 'vet', 'paravet', 'counsellor', 'relationship_manager'];
 const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { dateStyle: 'medium' }) : '-');

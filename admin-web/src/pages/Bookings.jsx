@@ -5,7 +5,7 @@ import {
 } from '../components/ui.jsx';
 import {
   useApi, useDebounced, inr, label, fmtDateTime, toISO,
-} from '../components/uiHelpers.js';
+} from '../components/ui.jsx';
 import SessionModal from '../components/SessionModal.jsx';
 
 const ROLES_FOR_SERVICE = {

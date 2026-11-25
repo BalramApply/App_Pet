@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { PawPrint } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth } from "../context/useAuth.js";
 import { errMsg } from '../api/client.js';
 import { ErrorBox } from '../components/ui.jsx';
 
