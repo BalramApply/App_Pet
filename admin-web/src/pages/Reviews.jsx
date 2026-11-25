@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { api, errMsg } from '../api/client.js';
-import { useApi, useDebounced, PageHead, Spinner, ErrorBox, Table, Badge, Pager, label, fmtDateTime } from '../components/ui.jsx';
+import { PageHead, Spinner, ErrorBox, Table, Badge, Pager } from '../components/ui.jsx';
+import { useApi, useDebounced, label, fmtDateTime } from '../components/uiHelpers.js';
 
 export default function Reviews() {
   const [status, setStatus] = useState('flagged');
@@ -11,8 +12,6 @@ export default function Reviews() {
   const [page, setPage] = useState(1);
   const [notice, setNotice] = useState({ type: '', text: '' });
   const [busyId, setBusyId] = useState('');
-
-  useEffect(() => { setPage(1); }, [status, maxRating, dq]);
 
   const { data, loading, error, reload } = useApi(
     () => api.get('/admin/reviews', {
@@ -74,15 +73,34 @@ export default function Reviews() {
         <button className="btn" onClick={recalcAll}><RefreshCw size={14} /> Recalculate all ratings</button>
       </PageHead>
       <div className="filters">
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All statuses</option>
           {['published', 'flagged', 'hidden'].map((s) => <option key={s} value={s}>{label(s)}</option>)}
         </select>
-        <select value={maxRating} onChange={(e) => setMaxRating(e.target.value)}>
+        <select
+          value={maxRating}
+          onChange={(e) => {
+            setMaxRating(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">Any rating</option>
           {[1, 2, 3].map((n) => <option key={n} value={n}>{n} star or lower</option>)}
         </select>
-        <input placeholder="Search review text" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input
+          placeholder="Search review text"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+        />
       </div>
       {notice.text ? <div className={`alert ${notice.type}`}>{notice.text}</div> : null}
       <ErrorBox message={error} />

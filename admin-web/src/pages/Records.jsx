@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { api, errMsg } from '../api/client.js';
 import {
-  useApi, useDebounced, PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field, Tabs, label, fmtDateTime,
+  PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field, Tabs,
 } from '../components/ui.jsx';
+import {
+  useApi, useDebounced, label, fmtDateTime,
+} from '../components/uiHelpers.js';
 
 const day = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { dateStyle: 'medium' }) : '-');
 const dateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');
@@ -84,8 +87,6 @@ function Vaccinations() {
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState(undefined);
 
-  useEffect(() => { setPage(1); }, [due, noCert, dq]);
-
   const { data, loading, error, reload } = useApi(
     () => api.get('/admin/vaccinations', {
       params: { due: due || undefined, missingCertificate: noCert || undefined, q: dq || undefined, page, limit: 20 },
@@ -106,13 +107,36 @@ function Vaccinations() {
   return (
     <>
       <div className="filters">
-        <input placeholder="Search vaccine name" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select value={due} onChange={(e) => setDue(e.target.value)}>
+        <input
+          placeholder="Search vaccine name"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          value={due}
+          onChange={(e) => {
+            setDue(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All records</option>
           <option value="overdue">Booster overdue</option>
           <option value="upcoming">Booster due in 30 days</option>
         </select>
-        <label className="check"><input type="checkbox" checked={noCert} onChange={(e) => setNoCert(e.target.checked)} /> Missing certificate</label>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={noCert}
+            onChange={(e) => {
+              setNoCert(e.target.checked);
+              setPage(1);
+            }}
+          />{' '}
+          Missing certificate
+        </label>
         <button className="btn primary" onClick={() => setEditing(null)}><Plus size={14} /> Add record</button>
       </div>
       <ErrorBox message={error} />
@@ -179,8 +203,6 @@ function Pets() {
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
 
-  useEffect(() => { setPage(1); }, [dq, species]);
-
   const { data, loading, error } = useApi(
     () => api.get('/admin/pets', { params: { q: dq || undefined, species: species || undefined, active: 'all', page, limit: 20 } }).then((r) => r.data.data),
     [dq, species, page]
@@ -197,8 +219,21 @@ function Pets() {
   return (
     <>
       <div className="filters">
-        <input placeholder="Search pet name or breed" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select value={species} onChange={(e) => setSpecies(e.target.value)}>
+        <input
+          placeholder="Search pet name or breed"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          value={species}
+          onChange={(e) => {
+            setSpecies(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">Dogs and cats</option>
           <option value="dog">Dogs</option>
           <option value="cat">Cats</option>

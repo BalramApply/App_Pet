@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { api } from '../api/Client.js'
-import { useApi, PageHead, Spinner, ErrorBox, Table, Badge, Pager, label, fmtDateTime, inr } from '../components/ui.jsx';
+import { useState } from 'react';
+import { api } from '../api/Client.js';
+import { PageHead, Spinner, ErrorBox, Table, Badge, Pager } from '../components/ui.jsx';
+import { useApi, label, fmtDateTime, inr } from '../components/uiHelpers.js';
 import SessionModal from '../components/SessionModal.jsx';
 
 const STATUSES = ['scheduled', 'professional_arrived', 'in_progress', 'duration_completed', 'completed', 'interrupted', 'disputed', 'cancelled'];
@@ -10,8 +11,6 @@ export default function Sessions() {
   const [settled, setSettled] = useState('');
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
-
-  useEffect(() => { setPage(1); }, [status, settled]);
 
   const { data, loading, error, reload } = useApi(
     () => api.get('/admin/sessions', {
@@ -35,11 +34,23 @@ export default function Sessions() {
     <>
       <PageHead title="Sessions" subtitle="Every individual visit, newest first" />
       <div className="filters">
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All statuses</option>
           {STATUSES.map((s) => <option key={s} value={s}>{label(s)}</option>)}
         </select>
-        <select value={settled} onChange={(e) => setSettled(e.target.value)}>
+        <select
+          value={settled}
+          onChange={(e) => {
+            setSettled(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">Settled or not</option>
           <option value="false">Not settled</option>
           <option value="true">Settled</option>

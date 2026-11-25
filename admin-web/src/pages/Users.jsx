@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { api, errMsg } from '../api/client.js';
 import {
-  useApi, useDebounced, PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field, SecretBox,
-  inr, label, fmtDateTime,
+  PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field, SecretBox,
 } from '../components/ui.jsx';
+import {
+  useApi, useDebounced, inr, label, fmtDateTime,
+} from '../components/uiHelpers.js';
 
 const PRO_ROLES = ['walker', 'trainer', 'groomer', 'vet', 'paravet', 'counsellor', 'relationship_manager'];
 const ALL_ROLES = ['pet_parent', ...PRO_ROLES];
@@ -266,8 +268,6 @@ export default function Users() {
   const [selectedId, setSelectedId] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
 
-  useEffect(() => { setPage(1); }, [dq, role, status]);
-
   const { data, loading, error, reload } = useApi(
     () => api.get('/admin/users', {
       params: { q: dq || undefined, role: role || undefined, accountStatus: status || undefined, page, limit: 20 },
@@ -295,12 +295,31 @@ export default function Users() {
       </PageHead>
 
       <div className="filters">
-        <input placeholder="Search name, phone or email" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
+        <input
+          placeholder="Search name, phone or email"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          value={role}
+          onChange={(e) => {
+            setRole(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All roles</option>
           {[...ALL_ROLES, 'admin'].map((r) => <option key={r} value={r}>{label(r)}</option>)}
         </select>
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All statuses</option>
           {['active', 'suspended', 'pending_verification', 'deleted'].map((s) => <option key={s} value={s}>{label(s)}</option>)}
         </select>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { api, errMsg } from '../api/client.js';
 import {
   useApi, Modal, Spinner, ErrorBox, Table, Badge, Field, inr, label, fmtDateTime,
@@ -75,6 +75,44 @@ const formatScheduleWindow = (prefix, startVal, endValOrMinutes) => {
   return `${prefix}: ${dayPart} • ${startTimePart} - ${endTimePart}`;
 };
 
+const getDefaultTiming = (session) => {
+  if (!session) {
+    return {
+      schedDate: '',
+      schedTime: '',
+      durationMinutes: '',
+      startDate: '',
+      startTime: '',
+      endDate: '',
+      endTime: '',
+      reason: '',
+    };
+  }
+  const sched = splitDateTime(session.scheduledDate);
+  const st = splitDateTime(session.startedAt);
+  const en = splitDateTime(session.endedAt);
+
+  // Default end date/time from endedAt, or from scheduledDate + scheduledDurationMinutes
+  let defaultEnd = en;
+  if (!defaultEnd.date && session.scheduledDate && session.scheduledDurationMinutes) {
+    const computedEnd = new Date(
+      new Date(session.scheduledDate).getTime() + Number(session.scheduledDurationMinutes) * 60000
+    );
+    defaultEnd = splitDateTime(computedEnd);
+  }
+
+  return {
+    schedDate: sched.date,
+    schedTime: sched.time,
+    durationMinutes: session.scheduledDurationMinutes ?? '',
+    startDate: st.date || sched.date,
+    startTime: st.time,
+    endDate: defaultEnd.date || sched.date,
+    endTime: defaultEnd.time,
+    reason: '',
+  };
+};
+
 export default function SessionModal({ id, onClose, onChanged }) {
   const { data, loading, error, reload } = useApi(
     () => api.get(`/admin/sessions/${id}`).then((r) => r.data.data),
@@ -83,16 +121,8 @@ export default function SessionModal({ id, onClose, onChanged }) {
   const [notice, setNotice] = useState({ type: '', text: '' });
   const [busy, setBusy] = useState(false);
 
-  const [timing, setTiming] = useState({
-    schedDate: '',
-    schedTime: '',
-    durationMinutes: '',
-    startDate: '',
-    startTime: '',
-    endDate: '',
-    endTime: '',
-    reason: '',
-  });
+  const [timingDraft, setTimingDraft] = useState(null);
+  const [timingSessionKey, setTimingSessionKey] = useState(null);
 
   const [resolve, setResolve] = useState({
     resolution: 'complete',
@@ -103,33 +133,24 @@ export default function SessionModal({ id, onClose, onChanged }) {
   });
 
   const s = data?.session;
+  const currentSessionKey = s ? `${s._id || id}-${s.updatedAt || ''}` : null;
+  const baseTiming = getDefaultTiming(s);
 
-  useEffect(() => {
-    if (!s) return;
-    const sched = splitDateTime(s.scheduledDate);
-    const st = splitDateTime(s.startedAt);
-    const en = splitDateTime(s.endedAt);
+  const timing =
+    timingDraft && timingSessionKey === currentSessionKey
+      ? { ...baseTiming, ...timingDraft }
+      : baseTiming;
 
-    // Default end date/time from endedAt, or from scheduledDate + scheduledDurationMinutes
-    let defaultEnd = en;
-    if (!defaultEnd.date && s.scheduledDate && s.scheduledDurationMinutes) {
-      const computedEnd = new Date(
-        new Date(s.scheduledDate).getTime() + Number(s.scheduledDurationMinutes) * 60000
-      );
-      defaultEnd = splitDateTime(computedEnd);
-    }
-
-    setTiming({
-      schedDate: sched.date,
-      schedTime: sched.time,
-      durationMinutes: s.scheduledDurationMinutes ?? '',
-      startDate: st.date || sched.date,
-      startTime: st.time,
-      endDate: defaultEnd.date || sched.date,
-      endTime: defaultEnd.time,
-      reason: '',
+  const setTiming = (updater) => {
+    setTimingSessionKey(currentSessionKey);
+    setTimingDraft((prev) => {
+      const current =
+        prev && timingSessionKey === currentSessionKey
+          ? { ...baseTiming, ...prev }
+          : baseTiming;
+      return typeof updater === 'function' ? updater(current) : { ...current, ...updater };
     });
-  }, [s]);
+  };
 
   const run = async (fn) => {
     setBusy(true);
@@ -142,6 +163,7 @@ export default function SessionModal({ id, onClose, onChanged }) {
         type: d.settlementError ? 'error' : 'info',
         text: `${res?.data?.message || 'Done.'}${extra}`,
       });
+      setTimingDraft(null);
       await reload();
       onChanged && onChanged();
     } catch (e) {

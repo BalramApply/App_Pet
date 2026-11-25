@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { api, errMsg } from '../api/client.js';
 import {
-  useApi, useDebounced, PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field, label, fmtDateTime,
+  PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field,
 } from '../components/ui.jsx';
+import {
+  useApi, useDebounced, label, fmtDateTime,
+} from '../components/uiHelpers.js';
 
 // The customer replied after the last staff reply (or staff never replied)
 const awaitingStaff = (t) =>
@@ -11,28 +14,48 @@ const awaitingStaff = (t) =>
 const PRIORITIES = ['critical', 'high', 'medium', 'low'];
 const TYPES = ['emergency_sos', 'callback_request', 'complaint', 'reschedule_request', 'wallet_billing_inquiry', 'concern_report', 'email_inquiry'];
 
+const getDefaultTicketForm = (ticket) => {
+  if (!ticket) return null;
+  return {
+    status: ticket.status,
+    priority: ticket.priority,
+    rm: ticket.assignedRelationshipManager?._id || '',
+    summary: ticket.resolution?.summary || '',
+  };
+};
+
 function TicketModal({ id, onClose, onChanged }) {
   const { data, loading, error, reload } = useApi(() => api.get(`/admin/support/tickets/${id}`).then((r) => r.data.data.ticket), [id]);
   const rms = useApi(() => api.get('/admin/users', { params: { role: 'relationship_manager', accountStatus: 'active', limit: 100 } }).then((r) => r.data.data.users), []);
-  const [form, setForm] = useState(null);
+  const [formDraft, setFormDraft] = useState(null);
+  const [draftTicketId, setDraftTicketId] = useState(null);
   const [notice, setNotice] = useState({ type: '', text: '' });
   const [busy, setBusy] = useState(false);
   const [reply, setReply] = useState('');
   const [internal, setInternal] = useState(false);
 
-  useEffect(() => {
-    if (data) {
-      setForm({
-        status: data.status,
-        priority: data.priority,
-        rm: data.assignedRelationshipManager?._id || '',
-        summary: data.resolution?.summary || '',
-      });
-    }
-  }, [data]);
+  const t = data;
+  const ticketKey = t ? `${t._id || id}-${t.updatedAt || ''}` : null;
+  const baseForm = getDefaultTicketForm(t);
+  const form =
+    baseForm && formDraft && draftTicketId === ticketKey
+      ? { ...baseForm, ...formDraft }
+      : baseForm;
+
+  const setForm = (updater) => {
+    setDraftTicketId(ticketKey);
+    setFormDraft((prev) => {
+      const current =
+        prev && draftTicketId === ticketKey && baseForm
+          ? { ...baseForm, ...prev }
+          : baseForm || {};
+      return typeof updater === 'function' ? updater(current) : { ...current, ...updater };
+    });
+  };
 
   const save = async (e) => {
     e.preventDefault();
+    if (!form) return;
     setBusy(true);
     setNotice({ type: '', text: '' });
     try {
@@ -40,6 +63,7 @@ function TicketModal({ id, onClose, onChanged }) {
       if (form.summary.trim()) body.resolutionSummary = form.summary;
       const res = await api.put(`/admin/support/tickets/${id}`, body);
       setNotice({ type: 'info', text: res.data.message });
+      setFormDraft(null);
       reload();
       onChanged();
     } catch (err) {
@@ -67,7 +91,6 @@ function TicketModal({ id, onClose, onChanged }) {
     }
   };
 
-  const t = data;
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   return (
@@ -164,8 +187,6 @@ export default function Support() {
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
 
-  useEffect(() => { setPage(1); }, [dq, openOnly, priority, type, unassigned]);
-
   const { data, loading, error, reload } = useApi(
     () => api.get('/admin/support/tickets', {
       params: {
@@ -202,17 +223,56 @@ export default function Support() {
     <>
       <PageHead title="Support tickets" subtitle={sum ? `${sum.openSos} open SOS - ${Object.values(sum.openByPriority).reduce((a, b) => a + b, 0)} open in total` : ''} />
       <div className="filters">
-        <input placeholder="Search ticket number or text" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+        <input
+          placeholder="Search ticket number or text"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          value={priority}
+          onChange={(e) => {
+            setPriority(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All priorities</option>
           {PRIORITIES.map((p) => <option key={p} value={p}>{label(p)}</option>)}
         </select>
-        <select value={type} onChange={(e) => setType(e.target.value)}>
+        <select
+          value={type}
+          onChange={(e) => {
+            setType(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All types</option>
           {TYPES.map((p) => <option key={p} value={p}>{label(p)}</option>)}
         </select>
-        <label className="check"><input type="checkbox" checked={openOnly} onChange={(e) => setOpenOnly(e.target.checked)} /> Open only</label>
-        <label className="check"><input type="checkbox" checked={unassigned} onChange={(e) => setUnassigned(e.target.checked)} /> Unassigned</label>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={openOnly}
+            onChange={(e) => {
+              setOpenOnly(e.target.checked);
+              setPage(1);
+            }}
+          />{' '}
+          Open only
+        </label>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={unassigned}
+            onChange={(e) => {
+              setUnassigned(e.target.checked);
+              setPage(1);
+            }}
+          />{' '}
+          Unassigned
+        </label>
       </div>
       <ErrorBox message={error} />
       {loading && !data ? <Spinner /> : null}

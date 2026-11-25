@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { api } from '../api/client.js';
 import { useApi, useDebounced, PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, fmtDateTime } from '../components/ui.jsx';
 
@@ -9,8 +9,6 @@ export default function Audit() {
   const [success, setSuccess] = useState('');
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(null);
-
-  useEffect(() => { setPage(1); }, [dq, method, success]);
 
   const { data, loading, error } = useApi(
     () => api.get('/admin/audit-logs', {
@@ -32,12 +30,31 @@ export default function Audit() {
     <>
       <PageHead title="Audit log" subtitle="Every change made through the admin API. Passwords are never stored." />
       <div className="filters">
-        <input placeholder="Search action, e.g. reset-password" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select value={method} onChange={(e) => setMethod(e.target.value)}>
+        <input
+          placeholder="Search action, e.g. reset-password"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          value={method}
+          onChange={(e) => {
+            setMethod(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All methods</option>
           {['POST', 'PUT', 'PATCH', 'DELETE'].map((m) => <option key={m} value={m}>{m}</option>)}
         </select>
-        <select value={success} onChange={(e) => setSuccess(e.target.value)}>
+        <select
+          value={success}
+          onChange={(e) => {
+            setSuccess(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">Succeeded or failed</option>
           <option value="true">Succeeded</option>
           <option value="false">Failed</option>

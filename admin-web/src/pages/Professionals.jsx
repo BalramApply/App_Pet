@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Clock } from 'lucide-react';
-import { api, errMsg } from '../api/Client.js'
+import { api, errMsg } from '../api/Client.js';
 import {
-  useApi, useDebounced, PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field, label, fmtDateTime,
+  PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field,
 } from '../components/ui.jsx';
+import {
+  useApi, useDebounced, label, fmtDateTime,
+} from '../components/uiHelpers.js';
 
 const PRO_ROLES = ['walker', 'trainer', 'groomer', 'vet', 'paravet', 'counsellor', 'relationship_manager'];
 const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('en-IN', { dateStyle: 'medium' }) : '-');
@@ -73,14 +76,21 @@ function ExpiryModal({ onClose, onChanged }) {
 
 function ProfessionalDetailModal({ id, onClose, onChanged }) {
   const { data, loading, error, reload } = useApi(() => api.get(`/admin/professionals/${id}`).then((r) => r.data.data), [id]);
-  const [notes, setNotes] = useState('');
+  const [notesDraft, setNotesDraft] = useState(null);
+  const [draftKey, setDraftKey] = useState(null);
   const [markAll, setMarkAll] = useState(false);
   const [notice, setNotice] = useState({ type: '', text: '' });
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (data) setNotes(data.professional.verificationNotes || '');
-  }, [data]);
+  const p = data?.professional;
+  const proKey = p ? `${p._id || id}-${p.updatedAt || p.verificationStatus || ''}` : null;
+  const defaultNotes = p?.verificationNotes || '';
+  const notes = notesDraft !== null && draftKey === proKey ? notesDraft : defaultNotes;
+
+  const setNotes = (val) => {
+    setDraftKey(proKey);
+    setNotesDraft(val);
+  };
 
   const run = async (fn) => {
     setBusy(true);
@@ -89,6 +99,7 @@ function ProfessionalDetailModal({ id, onClose, onChanged }) {
       const res = await fn();
       const warnings = res?.data?.data?.warnings || [];
       setNotice({ type: 'info', text: [res?.data?.message || 'Done.', ...warnings].join(' ') });
+      setNotesDraft(null);
       reload();
       onChanged();
     } catch (e) {
@@ -105,8 +116,6 @@ function ProfessionalDetailModal({ id, onClose, onChanged }) {
     }
     run(() => api.put(`/admin/professionals/${id}/verification`, { status, notes, markAllCredentialsVerified: markAll }));
   };
-
-  const p = data?.professional;
 
   return (
     <Modal title={p?.user?.name || 'Professional'} onClose={onClose} wide>
@@ -192,8 +201,6 @@ export default function Professionals() {
   const [selectedId, setSelectedId] = useState(null);
   const [showExpiry, setShowExpiry] = useState(false);
 
-  useEffect(() => { setPage(1); }, [dq, status, role]);
-
   const { data, loading, error, reload } = useApi(
     () => api.get('/admin/professionals', {
       params: { q: dq || undefined, status: status || undefined, role: role || undefined, page, limit: 20 },
@@ -225,12 +232,31 @@ export default function Professionals() {
       </PageHead>
 
       <div className="filters">
-        <input placeholder="Search name or phone" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <input
+          placeholder="Search name or phone"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All statuses</option>
           {['pending', 'verified', 'rejected', 'expired'].map((s) => <option key={s} value={s}>{label(s)}</option>)}
         </select>
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
+        <select
+          value={role}
+          onChange={(e) => {
+            setRole(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All roles</option>
           {PRO_ROLES.map((r) => <option key={r} value={r}>{label(r)}</option>)}
         </select>

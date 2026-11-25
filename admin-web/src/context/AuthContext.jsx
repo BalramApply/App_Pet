@@ -1,8 +1,6 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api, tokens } from '../api/client.js';
-
-const AuthContext = createContext(null);
-export const useAuth = () => useContext(AuthContext);
+import { AuthContext } from './AuthContextValue.js';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -53,8 +51,7 @@ export function AuthProvider({ children }) {
       } catch {
         /* ignore */
       }
-      const err = new Error('This panel is for PetJeeva administrators only.');
-      throw err;
+      throw new Error('This panel is for PetJeeva administrators only.');
     }
     tokens.set(accessToken, refreshToken);
     setUser(u);

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { api, errMsg } from '../api/client.js';
 import {
-  useApi, useDebounced, PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field,
-  inr, label, fmtDateTime, toISO,
+  PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field,
 } from '../components/ui.jsx';
+import {
+  useApi, useDebounced, inr, label, fmtDateTime, toISO,
+} from '../components/uiHelpers.js';
 import SessionModal from '../components/SessionModal.jsx';
 
 const ROLES_FOR_SERVICE = {
@@ -119,7 +121,7 @@ function BookingModal({ id, onClose, onChanged }) {
             </div>
             <div className="card">
               <div className="kv"><span>Professional</span><strong>{b.assignedProfessional?.name || '-'}</strong></div>
-              <div className="kv"><span>Counsellor</span><span>{b.assignedCounsellor?.name || '-'}</span></div>
+              <div className="kv"><span>Counsellor</span><strong>{b.assignedCounsellor?.name || '-'}</strong></div>
               <div className="kv"><span>Sessions done</span><strong>{b.completedSessionCount} / {b.totalSessionCount}</strong></div>
               <div className="kv"><span>Package total</span><strong>{inr(b.totalAmount)}</strong></div>
               <div className="kv"><span>Address</span><span>{b.addressSnapshot?.line1}, {b.addressSnapshot?.city}</span></div>
@@ -233,8 +235,6 @@ export default function Bookings() {
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
 
-  useEffect(() => { setPage(1); }, [dq, status, type]);
-
   const { data, loading, error, reload } = useApi(
     () => api.get('/admin/bookings', {
       params: { q: dq || undefined, status: status || undefined, bookingType: type || undefined, page, limit: 20 },
@@ -257,12 +257,31 @@ export default function Bookings() {
     <>
       <PageHead title="Bookings" subtitle="Packages and single sessions booked by pet parents" />
       <div className="filters">
-        <input placeholder="Search client name or phone" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <input
+          placeholder="Search client name or phone"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All statuses</option>
           {['upcoming', 'active', 'completed', 'cancelled'].map((s) => <option key={s} value={s}>{label(s)}</option>)}
         </select>
-        <select value={type} onChange={(e) => setType(e.target.value)}>
+        <select
+          value={type}
+          onChange={(e) => {
+            setType(e.target.value);
+            setPage(1);
+          }}
+        >
           <option value="">All types</option>
           {['free_assessment', 'single_session', 'multi_session_package', 'replacement_session'].map((s) => <option key={s} value={s}>{label(s)}</option>)}
         </select>
