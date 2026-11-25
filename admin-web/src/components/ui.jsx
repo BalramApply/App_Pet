@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { errMsg } from '../api/client.js';
+import { errMsg } from '../api/Client.js';
 
 /* ----------------------------- helpers ----------------------------- */
 

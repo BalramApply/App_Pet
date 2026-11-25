@@ -1,5 +1,5 @@
 import { RefreshCw } from 'lucide-react';
-import { api } from '../api/client.js';
+import { api } from '../api/Client.js';
 import { useApi, PageHead, StatCard, Spinner, ErrorBox, inr, label, fmtDateTime } from '../components/ui.jsx';
 
 const PRO_ROLES = ['walker', 'trainer', 'groomer', 'vet', 'paravet', 'counsellor', 'relationship_manager'];

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { api, errMsg } from '../api/client.js';
+import { api, errMsg } from '../api/Client.js';
 import { useApi, PageHead, Spinner, ErrorBox, Table, Badge, fmtDateTime } from '../components/ui.jsx';
 import SessionModal from '../components/SessionModal.jsx';
 

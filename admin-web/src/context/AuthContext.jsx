@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, tokens } from '../api/client.js';
+import { api, tokens } from '../api/Client.js';
 import { AuthContext } from './AuthContextValue.js';
 
 export function AuthProvider({ children }) {
