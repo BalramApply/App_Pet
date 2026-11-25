@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { api, errMsg } from '../api/client.js';
+import { api, errMsg } from '../api/Client.js';
 import { PageHead, Spinner, ErrorBox, Table, Badge, Pager } from '../components/ui.jsx';
 import { useApi, useDebounced, label, fmtDateTime } from '../components/ui.jsx';
 

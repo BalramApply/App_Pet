@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api, errMsg } from '../api/client.js';
+import { api, errMsg } from '../api/Client.js';
 import { PageHead, Spinner, ErrorBox, Field } from '../components/ui.jsx';
 import { useApi, fmtDateTime } from '../components/ui.jsx';
 

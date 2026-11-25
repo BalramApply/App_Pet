@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api } from '../api/client.js';
+import { api } from '../api/Client.js';
 import { useApi, useDebounced, PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, fmtDateTime } from '../components/ui.jsx';
 
 export default function Audit() {

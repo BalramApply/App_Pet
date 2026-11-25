@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { api, errMsg } from '../api/client.js';
+import { api, errMsg } from '../api/Client.js';
 import {
   PageHead, Spinner, ErrorBox, Table, Badge, Modal, Pager, Field, SecretBox,
 } from '../components/ui.jsx';

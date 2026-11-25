@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { api, errMsg } from '../api/client.js';
+import { api, errMsg } from '../api/Client.js';
 import {
   useApi, PageHead, Spinner, ErrorBox, Table, Badge, Modal, Field, Tabs, label, inr, toLines, fromLines,
 } from '../components/ui.jsx';

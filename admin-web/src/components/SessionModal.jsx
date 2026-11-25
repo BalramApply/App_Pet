@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api, errMsg } from '../api/client.js';
+import { api, errMsg } from '../api/Client.js';
 import {
   useApi, Modal, Spinner, ErrorBox, Table, Badge, Field, inr, label, fmtDateTime,
 } from './ui.jsx';
